@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git --version)",
+      "Read(//Users/wine_ny/.claude/commands/**)",
+      "Bash(git init)",
+      "Bash(git config user.name \"Test User\")",
+      "Bash(git config user.email \"test@example.com\")",
+      "Bash(git add .claude/ PRD.md)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
