@@ -42,7 +42,8 @@
       "Bash(PGPASSWORD=postgres psql:*)",
       "Bash(./scripts/sync-daily-review.sh:*)",
       "Bash(./scripts/update.sh:*)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(git rev-parse:*)"
     ],
     "deny": [],
     "ask": []
