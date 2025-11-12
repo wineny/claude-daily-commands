@@ -205,6 +205,127 @@ curl -fsSL https://raw.githubusercontent.com/wineny/claude-daily-commands/main/.
 
 ---
 
+## 🔄 Updating
+
+### Check for Updates
+
+```bash
+cd ~/claude-daily-commands
+./scripts/update.sh
+```
+
+The update script will:
+- ✅ Check for new versions
+- ✅ Show changelog
+- ✅ Ask for confirmation
+- ✅ Update commands automatically
+- ✅ Remind you to restart Claude Code
+
+### Manual Update
+
+```bash
+cd ~/claude-daily-commands
+git pull origin main
+cp -f .claude/commands/* ~/.claude/commands/
+```
+
+**Note**: Restart Claude Code after updating to apply changes.
+
+---
+
+## 🌐 Own It Integration (Beta)
+
+Automatically sync your daily reviews to [Own It](https://github.com/wineny/own-it) backend and track your progress over time!
+
+### Quick Setup
+
+```bash
+# 1. Setup API key (one-time)
+cd claude-daily-commands
+./scripts/setup-ownit.sh
+
+# 2. Use /dailyreview with --sync in Claude Code
+/dailyreview --sync           # Today + auto-sync
+/dailyreview week --sync      # Last 7 days + auto-sync
+
+# Or sync manually from terminal
+./scripts/sync-daily-review.sh
+./scripts/sync-daily-review.sh week
+```
+
+### Features
+
+- 🔄 **Auto-sync**: Automatically sync daily reviews to Own It backend
+- 🔗 **GitHub Integration**: Matches repositories with your GitHub account
+- 📊 **Dashboard**: View your progress in Own It web dashboard
+- 🔐 **Secure**: API key authentication with bcrypt hashing
+- 💾 **Persistent**: All your reviews stored in PostgreSQL database
+
+### Configuration
+
+After running `setup-ownit.sh`, your configuration is saved to:
+
+```
+~/.claude-daily-commands/config.json
+```
+
+```json
+{
+  "ownit": {
+    "apiKey": "own_it_sk_xxxxxxxxxxxxxxxxxxxxxxxx",
+    "apiUrl": "http://localhost:3001"
+  }
+}
+```
+
+### Usage Examples
+
+**In Claude Code:**
+```bash
+# Review with auto-sync (recommended)
+/dailyreview --sync
+/dailyreview week --sync
+
+# Review only (no sync)
+/dailyreview
+/dailyreview week
+```
+
+**In Terminal:**
+```bash
+# Sync today's work
+./scripts/sync-daily-review.sh
+
+# Sync yesterday
+./scripts/sync-daily-review.sh yesterday
+
+# Sync last 7 days
+./scripts/sync-daily-review.sh week
+
+# Local summary only (no sync)
+./scripts/sync-daily-review.sh --no-sync
+```
+
+### What Gets Synced
+
+- ✅ Commit statistics (count, files, additions, deletions)
+- ✅ Full commit timeline with messages and authors
+- ✅ File change analysis
+- ✅ Main work areas identification
+- ✅ Repository information (path, remote URL)
+
+### Graceful Degradation
+
+If sync fails (no API key, server down, etc.), the script will:
+
+1. Show a helpful error message
+2. Display local summary anyway
+3. Continue working without interruption
+
+**No API key? No problem!** The scripts work locally even without Own It integration.
+
+---
+
 ## 🔧 Troubleshooting
 
 ### Commands not showing
@@ -246,20 +367,21 @@ git log --since="today 00:00" --oneline
 - ✅ `/dailyreviewv2` - 80% shorter, 85% faster
 - ✅ `/todov2` - 70% shorter, 60% faster
 - ✅ 3-level output modes (default/brief/full)
+- ✅ Own It backend integration (API sync)
 - 🔄 Beta testing and feedback collection
 
 ### v0.3.0 (Next)
 - [ ] v2 stabilization and v1 replacement
+- [ ] Own It web dashboard (frontend)
 - [ ] Multi-language support (English, Japanese)
 - [ ] Custom output templates
 - [ ] Task agent integration
 
 ### v1.0.0 (Future)
-- [ ] Own It platform integration
 - [ ] OAuth2 authentication
 - [ ] Full `/portfolio` feature
 - [ ] Export to various formats
-- [ ] Auto-sync capabilities
+- [ ] Real-time collaboration features
 
 ---
 

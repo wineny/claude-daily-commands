@@ -27,7 +27,22 @@
       "Bash(git commit -m \"feat: Add v2 optimized commands and GitHub distribution setup\n\n- Add v2 commands (dailyreviewv2, todov2) - 80% shorter, 85% faster\n- Update README with one-click installation\n- Add MIT License\n- Add comprehensive v2 documentation (changelog, test guide, examples)\n- Replace placeholders with github.com/wineny/claude-daily-commands\n- Optimize install.sh for v2 support\")",
       "Bash(git add install.sh)",
       "Bash(git commit -m \"fix: Support one-click curl installation\n\n- Auto-detect installation method (remote curl vs local git clone)\n- Download files from GitHub when using curl method\n- Copy files from local directory when using git clone\n- Simplify installation options (remove local option for curl method)\n- Fix error when .claude/commands directory doesn''t exist\")",
-      "Bash(git commit -m \"fix: Handle stdin in curl pipe installation\n\n- Detect interactive vs non-interactive mode\n- Auto-install (global + v2) when piped from curl\n- Use /dev/tty for interactive prompts in git clone mode\n- Add better visual feedback with progress indicators\n- Improve error handling for failed downloads\")"
+      "Bash(git commit -m \"fix: Handle stdin in curl pipe installation\n\n- Detect interactive vs non-interactive mode\n- Auto-install (global + v2) when piped from curl\n- Use /dev/tty for interactive prompts in git clone mode\n- Add better visual feedback with progress indicators\n- Improve error handling for failed downloads\")",
+      "Bash(pnpm db:generate:*)",
+      "Bash(docker-compose:*)",
+      "Bash(pnpm db:migrate:*)",
+      "Bash(pnpm build:*)",
+      "Bash(chmod:*)",
+      "Bash(curl:*)",
+      "Bash(node -e:*)",
+      "Bash(python3:*)",
+      "Bash(npx tsx:*)",
+      "Bash(cat:*)",
+      "Bash(pnpm drizzle-kit:*)",
+      "Bash(PGPASSWORD=postgres psql:*)",
+      "Bash(./scripts/sync-daily-review.sh:*)",
+      "Bash(./scripts/update.sh:*)",
+      "Bash(bash:*)"
     ],
     "deny": [],
     "ask": []
