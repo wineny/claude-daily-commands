@@ -26,22 +26,20 @@ echo -e "${BLUE}================================${NC}"
 echo ""
 
 # Detect installation method
-# Check if script is being piped from curl (stdin is not a terminal)
-if [ ! -t 0 ]; then
-    # Piped from curl - always use remote mode
-    INSTALL_METHOD="remote"
-    echo -e "${BLUE}🌐 Remote installation mode${NC}"
-    INTERACTIVE=false
-elif [ -d ".claude/commands" ]; then
-    # Local installation (git clone method)
+# Check if stdin is a terminal (for interactive use)
+INTERACTIVE=false
+INSTALL_METHOD="remote"
+
+if [ -t 0 ] && [ -d ".claude/commands" ]; then
+    # stdin is a terminal AND local files exist = local interactive install
     INSTALL_METHOD="local"
-    echo -e "${BLUE}🔍 Detected local repository${NC}"
     INTERACTIVE=true
+    echo -e "${BLUE}🔍 Detected local repository${NC}"
 else
-    # Manual bash install.sh without local files - use remote
+    # Either piped from curl OR no local files = remote non-interactive
     INSTALL_METHOD="remote"
-    echo -e "${BLUE}🌐 Remote installation mode${NC}"
     INTERACTIVE=false
+    echo -e "${BLUE}🌐 Remote installation mode${NC}"
 fi
 
 # Installation type selection
