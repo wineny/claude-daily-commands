@@ -46,7 +46,7 @@ if [ "$INTERACTIVE" = true ]; then
     echo "  1) Global (all projects - recommended)"
     echo "  2) Cancel"
     echo ""
-    read -p "Choose installation type (1/2): " choice < /dev/tty
+    read -p "Choose installation type (1/2): " choice
 
     case $choice in
         1)
@@ -62,26 +62,11 @@ if [ "$INTERACTIVE" = true ]; then
             ;;
     esac
 
-    # Ask about v2 installation
-    echo ""
-    echo "Would you like to install v2 optimized commands?"
-    echo "  v2: 80% shorter output, 85% fewer approvals, 73% faster"
-    echo ""
-    echo "  y) Install v1 + v2 (recommended)"
-    echo "  n) Install v1 only"
-    echo ""
-    read -p "Install v2? (y/n): " install_v2 < /dev/tty
-
-    INSTALL_V2=false
-    if [ "$install_v2" = "y" ] || [ "$install_v2" = "Y" ]; then
-        INSTALL_V2=true
-    fi
 else
     # Non-interactive mode (curl pipe)
     INSTALL_TYPE="global"
-    INSTALL_V2=true
     echo ""
-    echo -e "${GREEN}📦 Auto-installing: Global + v2 optimized commands${NC}"
+    echo -e "${GREEN}📦 Auto-installing: Daily Review Sync Commands${NC}"
     echo ""
 fi
 
@@ -97,82 +82,63 @@ if [ "$INSTALL_METHOD" = "remote" ]; then
     echo "Downloading command files from GitHub..."
     echo ""
 
-    # Download v1 commands
-    echo -n "  Downloading dailyreview.md... "
-    if curl -fsSL "${GITHUB_RAW}/.claude/commands/dailyreview.md" -o ~/.claude/commands/dailyreview.md 2>/dev/null; then
+    # Download dailyreview-sync command
+    echo -n "  Downloading dailyreview-sync.md... "
+    if curl -fsSL "${GITHUB_RAW}/.claude/commands/dailyreview-sync.md" -o ~/.claude/commands/dailyreview-sync.md 2>/dev/null; then
         echo -e "${GREEN}✓${NC}"
     else
         echo -e "${RED}✗${NC}"
         exit 1
     fi
 
-    echo -n "  Downloading todo.md... "
-    if curl -fsSL "${GITHUB_RAW}/.claude/commands/todo.md" -o ~/.claude/commands/todo.md 2>/dev/null; then
+    # Download scripts
+    echo -n "  Downloading sync-daily-review.sh... "
+    mkdir -p ~/.claude-daily-commands/scripts
+    if curl -fsSL "${GITHUB_RAW}/scripts/sync-daily-review.sh" -o ~/.claude-daily-commands/scripts/sync-daily-review.sh 2>/dev/null; then
+        chmod +x ~/.claude-daily-commands/scripts/sync-daily-review.sh
         echo -e "${GREEN}✓${NC}"
     else
         echo -e "${RED}✗${NC}"
         exit 1
     fi
 
-    echo -n "  Downloading portfolio.md... "
-    if curl -fsSL "${GITHUB_RAW}/.claude/commands/portfolio.md" -o ~/.claude/commands/portfolio.md 2>/dev/null; then
+    echo -n "  Downloading setup-ownit.sh... "
+    if curl -fsSL "${GITHUB_RAW}/scripts/setup-ownit.sh" -o ~/.claude-daily-commands/scripts/setup-ownit.sh 2>/dev/null; then
+        chmod +x ~/.claude-daily-commands/scripts/setup-ownit.sh
         echo -e "${GREEN}✓${NC}"
     else
         echo -e "${RED}✗${NC}"
         exit 1
-    fi
-
-    # Download v2 commands if requested
-    if [ "$INSTALL_V2" = true ]; then
-        echo -n "  Downloading dailyreviewv2.md... "
-        if curl -fsSL "${GITHUB_RAW}/.claude/commands/dailyreviewv2.md" -o ~/.claude/commands/dailyreviewv2.md 2>/dev/null; then
-            echo -e "${GREEN}✓${NC}"
-        else
-            echo -e "${RED}✗${NC}"
-            exit 1
-        fi
-
-        echo -n "  Downloading todov2.md... "
-        if curl -fsSL "${GITHUB_RAW}/.claude/commands/todov2.md" -o ~/.claude/commands/todov2.md 2>/dev/null; then
-            echo -e "${GREEN}✓${NC}"
-        else
-            echo -e "${RED}✗${NC}"
-            exit 1
-        fi
     fi
 else
     # Local installation - copy from local directory
     echo "Copying command files from local repository..."
     echo ""
 
-    cp -v .claude/commands/dailyreview.md ~/.claude/commands/
-    cp -v .claude/commands/todo.md ~/.claude/commands/
-    cp -v .claude/commands/portfolio.md ~/.claude/commands/
+    cp -v .claude/commands/dailyreview-sync.md ~/.claude/commands/
 
-    if [ "$INSTALL_V2" = true ]; then
-        cp -v .claude/commands/dailyreviewv2.md ~/.claude/commands/
-        cp -v .claude/commands/todov2.md ~/.claude/commands/
-    fi
+    # Copy scripts
+    mkdir -p ~/.claude-daily-commands/scripts
+    cp -v scripts/sync-daily-review.sh ~/.claude-daily-commands/scripts/
+    cp -v scripts/setup-ownit.sh ~/.claude-daily-commands/scripts/
+    chmod +x ~/.claude-daily-commands/scripts/sync-daily-review.sh
+    chmod +x ~/.claude-daily-commands/scripts/setup-ownit.sh
 fi
 
 echo ""
 echo -e "${GREEN}✅ Installation complete!${NC}"
 echo ""
 echo -e "📁 Commands installed to: ${BLUE}~/.claude/commands/${NC}"
+echo -e "📁 Scripts installed to: ${BLUE}~/.claude-daily-commands/scripts/${NC}"
 echo ""
-echo "📋 Available commands (in all projects):"
+echo "📋 Available command:"
 echo ""
-echo "   ${BLUE}v1 (detailed output)${NC}"
-echo "   • /dailyreview - Git-based daily work review"
-echo "   • /todo        - Smart todo recommendations"
-echo "   • /portfolio   - Portfolio generation (beta)"
-
-if [ "$INSTALL_V2" = true ]; then
-    echo ""
-    echo "   ${GREEN}v2 (optimized, faster)${NC}"
-    echo "   • /dailyreviewv2 - 80% shorter, 85% fewer approvals ⭐"
-    echo "   • /todov2        - 70% shorter, faster execution ⭐"
-fi
+echo "   ${GREEN}/dailyreview-sync${NC} - Sync daily review to Own It"
+echo ""
+echo "📋 Available scripts:"
+echo ""
+echo "   ${BLUE}sync-daily-review.sh${NC} - Sync Git commits to Own It platform"
+echo "   ${BLUE}setup-ownit.sh${NC} - Configure Own It API key and settings"
 
 echo ""
 echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -189,19 +155,14 @@ echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━�
 echo -e "${BLUE}  Quick Start${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo "1. Restart Claude Code (Cmd+Q)"
-echo "2. Open any Git repository"
-echo "3. Type / to see commands"
+echo "1. Setup Own It integration:"
+echo "   ${GREEN}~/.claude-daily-commands/scripts/setup-ownit.sh${NC}"
 echo ""
-
-if [ "$INSTALL_V2" = true ]; then
-    echo -e "${GREEN}Try these:${NC}"
-    echo ""
-    echo "  /dailyreviewv2          # Quick daily summary"
-    echo "  /dailyreviewv2 --brief  # Ultra-compact (3 lines)"
-    echo "  /todov2                 # Fast todo list"
-    echo ""
-fi
+echo "2. Restart Claude Code (Cmd+Q)"
+echo ""
+echo "3. Open any Git repository and run:"
+echo "   ${GREEN}/dailyreview-sync${NC}"
+echo ""
 
 echo -e "📖 Documentation: ${BLUE}https://github.com/${GITHUB_USER}/${GITHUB_REPO}${NC}"
 echo -e "🐛 Report issues: ${BLUE}https://github.com/${GITHUB_USER}/${GITHUB_REPO}/issues${NC}"
