@@ -366,19 +366,35 @@ PYEOF
 
 **설정 파일 확인:**
 ```bash
-cat ~/.claude-daily-commands/config.json 2>/dev/null
+# --local 플래그가 있으면 config.local.json 우선 사용
+if [[ "$ARGUMENTS" == *"--local"* ]] && [ -f ~/.claude-daily-commands/config.local.json ]; then
+  cat ~/.claude-daily-commands/config.local.json 2>/dev/null
+else
+  cat ~/.claude-daily-commands/config.json 2>/dev/null
+fi
 ```
 
-**API URL 결정 로직:**
-1. `--local` 플래그 있음 → `http://localhost:4000`
-2. config에 `ownit_api_url` 있음 → 해당 URL 사용
-3. 둘 다 없음 → 기본값 `https://api.own-it.dev`
+**API URL 및 키 결정 로직:**
+1. `--local` 플래그 있음:
+   - `~/.claude-daily-commands/config.local.json` 존재 → 해당 파일에서 API 키와 URL 읽기
+   - `config.local.json` 없음 → `config.json`에서 API 키 읽고 URL은 `http://localhost:4000`로 오버라이드
+2. `--local` 플래그 없음:
+   - `config.json`에서 API 키와 URL 읽기
+   - URL이 없으면 기본값 `https://api.own-it.dev`
 
-**config.json 예시:**
+**config.json 예시** (운영 서버용):
 ```json
 {
   "ownit_api_key": "own_it_sk_xxx",
   "ownit_api_url": "https://api.own-it.dev"
+}
+```
+
+**config.local.json 예시** (로컬 개발용):
+```json
+{
+  "ownit_api_key": "own_it_sk_xxx",
+  "ownit_api_url": "http://localhost:4000"
 }
 ```
 
@@ -464,6 +480,8 @@ curl -s -X POST "[API_URL]/anonymous-reviews" \
 ---
 
 ## 설정 파일
+
+### 운영 서버용 설정
 `~/.claude-daily-commands/config.json`:
 ```json
 {
@@ -472,13 +490,22 @@ curl -s -X POST "[API_URL]/anonymous-reviews" \
 }
 ```
 
+### 로컬 개발용 설정 (선택사항)
+`~/.claude-daily-commands/config.local.json`:
+```json
+{
+  "ownit_api_key": "own_it_sk_xxx",
+  "ownit_api_url": "http://localhost:4000"
+}
+```
+
 **필드 설명:**
 - `ownit_api_key`: Own It API 키 (없으면 익명 모드)
 - `ownit_api_url`: API 서버 URL (기본값: `https://api.own-it.dev`)
 
 **환경별 사용:**
-- 일반 사용: 운영 서버로 자동 동기화
-- 개발/테스트: `--local` 플래그로 로컬 서버 사용
+- **일반 사용**: `config.json`에서 운영 서버로 자동 동기화
+- **로컬 개발**: `--local` 플래그 사용 시 `config.local.json`이 있으면 우선 사용, 없으면 `config.json`의 키로 localhost:4000에 연결
 
 ---
 
